@@ -1,0 +1,60 @@
+<html>
+<head>
+<link rel="stylesheet" href="./css/milligram.css">
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Product Code</th>
+                <th>Unit Price</th>
+                <th>Qty</th>
+                <th>Total Price</th>
+                <th>Clear Cart</th>
+                <th>Update Cart</th>
+                <th><a href="./cart.html">Add to Cart</a></th>
+            </tr>
+        </thead>
+        <tbody id="itemList"></tbody>
+    </table>
+    <script src="./js/axios.min.js"></script>
+    <script>
+    GetList();
+    async function GetList(){
+    let res = await axios.get("https://crud.teamrabbil.com/api/v1/ReadProduct");
+        if(res.status==200){
+            let list=res.data["data"];
+            list.forEach(item => {
+            document.getElementById("itemList").innerHTML+=(`<tr>
+                <td>${item["ProductName"]}</td>
+                <td>${item["ProductCode"]}</td>
+                <td>${item["UnitPrice"]}</td>
+                <td>${item["Qty"]}</td>
+                <td>${item["TotalPrice"]}</td>
+                <td><button onclick="clearItem('${item['_id']}')">Clear Cart</button></td>
+                <td><button onclick="updateCart('${item['_id']}')">Update Cart</button></td>
+            </tr>`)});
+        }
+        else {
+            console.log("Error");
+        }
+        }
+
+        async function clearItem(id){
+            let res = await axios.get(`https://crud.teamrabbil.com/api/v1/DeleteProduct/${id}`);
+            if (res.status==200){
+                alert("Cleared the Cart");
+                document.getElementById("itemList").innerHTML="";
+                GetList();
+            }
+            else{
+                alert("Error");
+            }
+        }
+        async function updateCart(id){
+            window.location=`updatecart.html?id=${id}`;
+        }
+    </script>
+</body>
+</html>
